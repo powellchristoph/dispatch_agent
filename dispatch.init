@@ -1,0 +1,101 @@
+#!/bin/bash
+# chkconfig: 345 20 80
+# description: Dispatch start/shutdown script
+# processname: dispatch
+# config: /opt/dispatch/dispatch.conf
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+# Path to fes install folder
+DISPATCH=/opt/dispatch/dispatch.py
+DISPATCH_OPTS="--debug --daemon"
+LOCKFILE=/var/lock/subsys/dispatch
+
+RETVAL=0
+
+d_start() {
+    echo -n $"Starting Dispatch: "
+    daemon $DISPATCH $DISPATCH_OPTS && success || failure
+    RETVAL=$?
+    echo
+    return $RETVAL
+}
+
+d_stop() {
+    echo -n $"Stopping Dispatch: "
+
+    if [ -f $LOCKFILE ]; then
+        killproc -p $LOCKFILE $DISPATCH
+    else
+        failure $"Stopping Dispatch"
+    fi
+    RETVAL=$?
+
+    [ $RETVAL -eq 0 ] && rm -f $LOCKFILE
+    echo
+}
+
+d_graceful_stop() {
+    echo -n $"Graceful stop Dispatch: "
+
+    if [ -f $LOCKFILE ]; then
+        killproc -p $LOCKFILE $DISPATCH -USR1 
+    else
+        failure $"Graceful stop Dispatch"
+    fi
+    RETVAL=$?
+
+    [ $RETVAL -eq 0 ] && rm -f $LOCKFILE
+    echo
+}
+
+d_restart() {
+    d_stop
+    sleep 1
+    d_start
+}
+
+d_status() {
+    status -p $LOCKFILE $DISPATCH
+}
+
+d_status_q() {
+    d_status >/dev/null 2>&1
+}
+
+case "$1" in
+    start)
+        d_status_q && exit 0
+        d_start
+        ;;
+    stop)
+        if ! d_status_q; then
+            rm -rf $LOCKFILE
+            exit 0
+        fi
+        d_stop
+        ;;
+    stop_graceful)
+        if ! d_status_q; then
+            rm -rf $LOCKFILE
+            exit 0
+        fi
+        d_graceful_stop
+        ;;
+    restart)
+        d_restart
+        ;;
+    status)
+        d_status
+        RETVAL=$?
+        if [ $RETVAL -eq 3 -a -f $LOCKFILE ]; then
+            RETVAL=2
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|stop_graceful|status}"
+        RETVAL=2
+        ;;
+esac
+exit $RETVAL
