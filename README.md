@@ -5,13 +5,13 @@ Dispatch is an automated system which monitors directories for files and execute
 
 Current pollers:
 
-    FilePoller - A basic poller that scans the given path and transfers the found files. Will not send directories.
-    DirPoller - A poller that scans the given path and transfers the found directories. It will initate a transfer once the XML and DTD files exist.
-    SubDirPoller - A poller that scans the given path for subdirectories and then transfers each file found in the subdirs individually while maintaining the directory structure. This will not remove the subdirectories.
-    TelusPoller - A specialty poller to support Telus. This scans provider_id/asset_id/{hd|sd} for files.
-    PAPoller - A poller to support the provider/asset directory structure. It supports the following directory structure: /provider_id/asset_id/files. It will send the asset_id directory once the ADI.XML and ADI.DTD files exist.
-    GooglePoller - A specialty poller built to support Google. It is the same as the Dir Poller, but once it has completely sent the directory, it will send a blank file called delivery.complete.
-    DirTarPoller - Scans for tar files with in the found subdirectories.
+* FilePoller - A basic poller that scans the given path and transfers the found files. Will not send directories.
+* DirPoller - A poller that scans the given path and transfers the found directories. It will initate a transfer once the XML and DTD files exist.
+* SubDirPoller - A poller that scans the given path for subdirectories and then transfers each file found in the subdirs individually while maintaining the directory structure. This will not remove the subdirectories.
+* TelusPoller - A specialty poller to support Telus. This scans provider_id/asset_id/{hd|sd} for files.
+* PAPoller - A poller to support the provider/asset directory structure. It supports the following directory structure: /provider_id/asset_id/files. It will send the asset_id directory once the ADI.XML and ADI.DTD files exist.
+* GooglePoller - A specialty poller built to support Google. It is the same as the Dir Poller, but once it has completely sent the directory, it will send a blank file called delivery.complete.
+* DirTarPoller - Scans for tar files with in the found subdirectories.
 
 Dispatch Agent is the stateless agent which actually monitors the directories and initiates the transfers. You can run and agent on the same server as Dispatch web, or scale out to multiple nodes.
 
